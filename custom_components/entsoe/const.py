@@ -15,7 +15,7 @@ ATTRIBUTION = "Data provided by ENTSO-e Transparency Platform"
 DOMAIN = "entsoe"
 ICON = "mdi:currency-eur"
 UNIQUE_ID = f"{DOMAIN}_component"
-COMPONENT_TITLE = "ENTSO-e Transparency Platform"
+COMPONENT_TITLE = "ENTSO-e Transparency Platform - Day-ahead Prices"
 
 CONF_API_KEY = "api_key"
 CONF_ENTITY_NAME = "name"
@@ -28,7 +28,7 @@ CONF_VAT_VALUE = "VAT_value"
 
 DEFAULT_MODIFYER = "{{current_price}}"
 
-#default is only for internal use / backwards compatibility
+# default is only for internal use / backwards compatibility
 CALCULATION_MODE = { "default": "publish", "rotation": "rotation", "sliding": "sliding", "publish": "publish" }
 
 # Commented ones are not working at entsoe
@@ -96,56 +96,71 @@ class EntsoeEntityDescription(SensorEntityDescription):
 
 
 SENSOR_TYPES: tuple[EntsoeEntityDescription, ...] = (
+    # EntsoeEntityDescription(
+    #     key="current_price",
+    #     name="Current electricity market price",
+    #     native_unit_of_measurement=f"{CURRENCY_EURO}/{ENERGY_KILO_WATT_HOUR}",
+    #     value_fn=lambda data: data["current_price"],
+    #     state_class=SensorStateClass.MEASUREMENT
+    # ),
+    # EntsoeEntityDescription(
+    #     key="next_hour_price",
+    #     name="Next hour electricity market price",
+    #     native_unit_of_measurement=f"{CURRENCY_EURO}/{ENERGY_KILO_WATT_HOUR}",
+    #     value_fn=lambda data: data["next_hour_price"],
+    # ),
+    # EntsoeEntityDescription(
+    #     key="min_price",
+    #     name="Lowest energy price today",
+    #     native_unit_of_measurement=f"{CURRENCY_EURO}/{ENERGY_KILO_WATT_HOUR}",
+    #     value_fn=lambda data: data["min_price"],
+    # ),
+    # EntsoeEntityDescription(
+    #     key="max_price",
+    #     name="Highest energy price today",
+    #     native_unit_of_measurement=f"{CURRENCY_EURO}/{ENERGY_KILO_WATT_HOUR}",
+    #     value_fn=lambda data: data["max_price"],
+    # ),
+    # EntsoeEntityDescription(
+    #     key="avg_price",
+    #     name="Average electricity price today",
+    #     native_unit_of_measurement=f"{CURRENCY_EURO}/{ENERGY_KILO_WATT_HOUR}",
+    #     value_fn=lambda data: data["avg_price"],
+    # ),
+    # EntsoeEntityDescription(
+    #     key="percentage_of_max",
+    #     name="Current percentage of highest electricity price today",
+    #     native_unit_of_measurement=f"{PERCENTAGE}",
+    #     icon="mdi:percent",
+    #     value_fn=lambda data: round(
+    #         data["current_price"] / data["max_price"] * 100, 1
+    #     ),
+    # ),
+    # EntsoeEntityDescription(
+    #     key="highest_price_time_today",
+    #     name="Time of highest price today",
+    #     device_class=SensorDeviceClass.TIMESTAMP,
+    #     value_fn=lambda data: data["time_max"],
+    # ),
+    # EntsoeEntityDescription(
+    #     key="lowest_price_time_today",
+    #     name="Time of lowest price today",
+    #     device_class=SensorDeviceClass.TIMESTAMP,
+    #     value_fn=lambda data: data["time_min"],
+    # ),
     EntsoeEntityDescription(
-        key="current_price",
-        name="Current electricity market price",
-        native_unit_of_measurement=f"{CURRENCY_EURO}/{ENERGY_KILO_WATT_HOUR}",
-        value_fn=lambda data: data["current_price"],
-        state_class=SensorStateClass.MEASUREMENT
-    ),
-    EntsoeEntityDescription(
-        key="next_hour_price",
-        name="Next hour electricity market price",
-        native_unit_of_measurement=f"{CURRENCY_EURO}/{ENERGY_KILO_WATT_HOUR}",
-        value_fn=lambda data: data["next_hour_price"],
-    ),
-    EntsoeEntityDescription(
-        key="min_price",
-        name="Lowest energy price today",
-        native_unit_of_measurement=f"{CURRENCY_EURO}/{ENERGY_KILO_WATT_HOUR}",
-        value_fn=lambda data: data["min_price"],
-    ),
-    EntsoeEntityDescription(
-        key="max_price",
-        name="Highest energy price today",
-        native_unit_of_measurement=f"{CURRENCY_EURO}/{ENERGY_KILO_WATT_HOUR}",
-        value_fn=lambda data: data["max_price"],
-    ),
-    EntsoeEntityDescription(
-        key="avg_price",
-        name="Average electricity price today",
-        native_unit_of_measurement=f"{CURRENCY_EURO}/{ENERGY_KILO_WATT_HOUR}",
-        value_fn=lambda data: data["avg_price"],
-    ),
-    EntsoeEntityDescription(
-        key="percentage_of_max",
-        name="Current percentage of highest electricity price today",
-        native_unit_of_measurement=f"{PERCENTAGE}",
-        icon="mdi:percent",
-        value_fn=lambda data: round(
-            data["current_price"] / data["max_price"] * 100, 1
-        ),
-    ),
-    EntsoeEntityDescription(
-        key="highest_price_time_today",
-        name="Time of highest price today",
+        key="today",
+        # name="EntsoE Prices Today",
+        name="Prices Today",
         device_class=SensorDeviceClass.TIMESTAMP,
-        value_fn=lambda data: data["time_max"],
+        value_fn=lambda data: data["time_today"],
     ),
     EntsoeEntityDescription(
-        key="lowest_price_time_today",
-        name="Time of lowest price today",
+        key="tomorrow",
+        # name="EntsoE Prices Tomorrow",
+        name="Prices Tomorrow",
         device_class=SensorDeviceClass.TIMESTAMP,
-        value_fn=lambda data: data["time_min"],
+        value_fn=lambda data: data["time_tomorrow"],
     ),
+
 )

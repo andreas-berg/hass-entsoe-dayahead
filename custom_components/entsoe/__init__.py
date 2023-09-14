@@ -19,10 +19,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Initialise the coordinator and save it as domain-data
     api_key = entry.options[CONF_API_KEY]
     area = entry.options[CONF_AREA]
-    modifyer = entry.options.get(CONF_MODIFYER, DEFAULT_MODIFYER)
-    vat = entry.options.get(CONF_VAT_VALUE, 0)
-    calculation_mode = entry.options.get(CONF_CALCULATION_MODE, CALCULATION_MODE["default"])
-    entsoe_coordinator = EntsoeCoordinator(hass, api_key=api_key, area = area, modifyer = modifyer, calculation_mode=calculation_mode, VAT=vat)
+    # modifyer = entry.options.get(CONF_MODIFYER, DEFAULT_MODIFYER)
+    # vat = entry.options.get(CONF_VAT_VALUE, 0)
+    # calculation_mode = entry.options.get(CONF_CALCULATION_MODE, CALCULATION_MODE["default"])
+    # entsoe_coordinator = EntsoeCoordinator(hass, api_key=api_key, area = area, modifyer = modifyer, calculation_mode=calculation_mode, VAT=vat)
+    entsoe_coordinator = EntsoeCoordinator(hass, api_key=api_key, area = area)
 
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = {

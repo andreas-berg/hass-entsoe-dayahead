@@ -1,11 +1,11 @@
 {
   "domain": "entsoe",
-  "name": "ENTSO-e Transparency Platform",
-  "documentation": "https://github.com/JaccoR/hass-entso-e",
-  "issue_tracker": "https://github.com/JaccoR/hass-entso-e/issues",
+  "name": "ENTSO-e Transparency Platform - Day-ahead Prices",
+  "documentation": "https://github.com/andreas-berg/hass-entso-e",
+  "issue_tracker": "https://github.com/andreas-berg/hass-entso-e/issues",
   "config_flow": true,
-  "codeowners": ["@JaccoR"],
+  "codeowners": ["@andreas-berg"],
   "iot_class": "cloud_polling",
   "version": "0.0.1",
-  "requirements": ["entsoe-py==0.5.8"]
+  "requirements": ["entsoe-py==0.5.10"]
 }

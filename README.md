@@ -1,4 +1,4 @@
-# Home Assistant ENTSO-e Transparency Platform Energy Prices [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?hosted_button_id=J6LK5FLATEUNC)
+# Home Assistant ENTSO-e Transparency Platform Energy Prices
 Custom component for Home Assistant to fetch energy prices of all European countries from the ENTSO-e Transparency Platform (https://transparency.entsoe.eu/).
 Day ahead energy prices are added as a sensor and can be used in automations to switch equipment. A 24 Hour forecast of the energy prices is in the sensors attributes and can be shown in a graph:
 
@@ -11,16 +11,17 @@ You need an ENTSO-e Restful API key for this integration. To request this API ke
 email address you entered during registration in the email body.
 
 ### Sensors
-The integration adds the following sensors:
-- Average Day-Ahead Electricity Price Today (This integration carries attributes with all prices)
-- Highest Day-Ahead Electricity Price Today
-- Lowest Day-Ahead Electricity Price Today
-- Current Day-Ahead Electricity Price
-- Current Percentage Relative To Highest Electricity Price Of The Day
-- Next Hour Day-Ahead Electricity Price
-- Time Of Highest Energy Price Today
-- Time Of Lowest Energy Price Today
-  
+The integration adds the following sensors:~~
+~~- Average Day-Ahead Electricity Price Today (This integration carries attributes with all prices)~~
+~~- Highest Day-Ahead Electricity Price Today~~
+~~- Lowest Day-Ahead Electricity Price Today~~
+~~- Current Day-Ahead Electricity Price~~
+~~- Current Percentage Relative To Highest Electricity Price Of The Day~~
+~~- Next Hour Day-Ahead Electricity Price~~
+~~- Time Of Highest Energy Price Today~~
+~~- Time Of Lowest Energy Price Today~~
+  - Todays Prices
+  - Tomorrows Prices
 ------
 ## Installation
 
@@ -36,12 +37,11 @@ Search for "ENTSO-e" when adding HACS integrations and add "ENTSO-e Transparency
 
 The sensors can be added using the web UI. In the web UI you can add your API-key and country and the sensors will automatically be added to your system. There is an optional field for an cost modifyer template.
 
-### Cost Modifyer Template
+~~### Cost Modifyer Template~~
 
-In the optional field `Price Modifyer Template` a template to modify the price to add additional costs, such as fixed costs per kWh and VAT, can be added. When left empty, no additional costs are added.
-In this template `now()` always refers start of the hour of that price and `current_price` refers to the price itself. This way day ahead price can be modified to correct for extra costs.
+~~In the optional field `Price Modifyer Template` a template to modify the price to add additional costs, such as fixed costs per kWh and VAT, can be added. When left empty, no additional costs are added.~~
+~~In this template `now()` always refers start of the hour of that price and `current_price` refers to the price itself. This way day ahead price can be modified to correct for extra costs.~~
 
-An example template is given below. You can find and share other templates [here](https://github.com/JaccoR/hass-entso-e/discussions/categories/price-modifyer-templates).
 ```
 {% set s = {
     "extra_cost": 0.5352,
