@@ -11,15 +11,15 @@ You need an ENTSO-e Restful API key for this integration. To request this API ke
 email address you entered during registration in the email body.
 
 ### Sensors
-The integration adds the following sensors:~~
-~~- Average Day-Ahead Electricity Price Today (This integration carries attributes with all prices)~~
-~~- Highest Day-Ahead Electricity Price Today~~
-~~- Lowest Day-Ahead Electricity Price Today~~
-~~- Current Day-Ahead Electricity Price~~
-~~- Current Percentage Relative To Highest Electricity Price Of The Day~~
-~~- Next Hour Day-Ahead Electricity Price~~
-~~- Time Of Highest Energy Price Today~~
-~~- Time Of Lowest Energy Price Today~~
+The integration adds the following sensors:
+  - ~~Average Day-Ahead Electricity Price Today (This integration carries attributes with all prices)~~
+  - ~~Highest Day-Ahead Electricity Price Today~~
+  - ~~Lowest Day-Ahead Electricity Price Today~~
+  - ~~Current Day-Ahead Electricity Price~~
+  - ~~Current Percentage Relative To Highest Electricity Price Of The Day~~
+  - ~~Next Hour Day-Ahead Electricity Price~~
+  - ~~Time Of Highest Energy Price Today~~
+  - ~~Time Of Lowest Energy Price Today~~
   - Todays Prices
   - Tomorrows Prices
 ------
