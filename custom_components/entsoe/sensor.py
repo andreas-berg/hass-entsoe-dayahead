@@ -96,11 +96,11 @@ class EntsoeSensor(CoordinatorEntity, RestoreSensor):
             self.entity_id = f"{DOMAIN}.{name}_{description.name}"
             #unique id in .storage file for ui configuration.
             self._attr_unique_id = f"entsoe.{name}_{description.key}"
-            self._attr_name = f"{description.name} ({name})"
+            self._attr_name = f"[ENTSO-e] {description.name} ({name})"
         else:
             self.entity_id = f"{DOMAIN}.{description.name}"
             self._attr_unique_id = f"entsoe.{description.key}"
-            self._attr_name = f"{description.name}"
+            self._attr_name = f"[ENTSO-e] {description.name}"
 
         self._attr_device_class = SensorDeviceClass.MONETARY if description.device_class is None else description.device_class
         self.entity_description: EntsoeEntityDescription = description
@@ -167,7 +167,13 @@ class EntsoeSensor(CoordinatorEntity, RestoreSensor):
         if (restored_last_extra_data := await self.async_get_last_extra_data()) is None:
             return None
 
-        if self.description.key == "avg_price":
+        # if self.description.key == "avg_price":
+        #     self.coordinator.data = self.parse_attribute_data_to_coordinator_data(restored_last_extra_data.as_dict()["_attr_extra_state_attributes"])
+
+        # note to self: not convinced this does what is expected
+        if self.description.key == "prices_today":
+            self.coordinator.data = self.parse_attribute_data_to_coordinator_data(restored_last_extra_data.as_dict()["_attr_extra_state_attributes"])
+        if self.description.key == "prices_tomorrow":
             self.coordinator.data = self.parse_attribute_data_to_coordinator_data(restored_last_extra_data.as_dict()["_attr_extra_state_attributes"])
 
         return EntsoeSensorExtraStoredData.from_dict(

@@ -141,14 +141,12 @@ SENSOR_TYPES: tuple[EntsoeEntityDescription, ...] = (
     # ),
     EntsoeEntityDescription(
         key="today",
-        # name="EntsoE Prices Today",
         name="Prices Today",
         device_class=SensorDeviceClass.TIMESTAMP,
         value_fn=lambda data: data["time_today"],
     ),
     EntsoeEntityDescription(
         key="tomorrow",
-        # name="EntsoE Prices Tomorrow",
         name="Prices Tomorrow",
         device_class=SensorDeviceClass.TIMESTAMP,
         value_fn=lambda data: data["time_tomorrow"],
