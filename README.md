@@ -1,3 +1,6 @@
+> [!NOTE]
+> This is hard fork of  [JaccoR](https://github.com/JaccoR/hass-entso-e)'s very nice but apparently abandoned project. I'll make an effort to maintain it and any possible bugs. Much functionality has been removed so pls make an 'issue' if you need really need it. And I'll put it on HACS, if they let me, but until then just put the files in `custom_components`. 
+
 # Home Assistant ENTSO-e Transparency Platform Energy Prices
 Custom component for Home Assistant to fetch energy prices of all European countries from the ENTSO-e Transparency Platform (https://transparency.entsoe.eu/).
 Day ahead energy prices are added as a sensor and can be used in automations to switch equipment. A 24 Hour forecast of the energy prices is in the sensors attributes and can be shown in a graph:
