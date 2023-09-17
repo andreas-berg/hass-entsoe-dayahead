@@ -22,63 +22,80 @@ from jinja2 import pass_context
 
 from .const import (
     AREA_INFO,
+    TZ_INFO,
 )
 
 
 class EntsoeCoordinator(DataUpdateCoordinator):
     """Get the latest data and update the states."""
 
-    def __init__(self, hass: HomeAssistant, api_key, area) -> None:
+    def __init__(self, hass: HomeAssistant, api_key, area, timezone) -> None:
         """Initialize the data object."""
         self.hass = hass
         self.api_key = api_key
         self.area = AREA_INFO[area]["code"]
+        self.timezone = TZ_INFO[timezone]["timezone"]
 
         logger = logging.getLogger(__name__)
         super().__init__(
             hass,
             logger,
             name="ENTSO-e coordinator",
-            update_interval=timedelta(minutes=2),
+            update_interval=timedelta(minutes=60),
         )
 
     async def _async_update_data(self) -> dict:
         """Get the latest data from ENTSO-e"""
         self.logger.debug("Fetching ENTSO-e data")
-        self.logger.debug(self.area)
+        self.logger.debug(f"Bidding zone: {self.area}")
+        self.logger.debug(f"Timezone:  {self.timezone}")
 
-        time_zone = dt.now().tzinfo
-        # We request data for yesterday up until tomorrow.
-        yesterday = pd.Timestamp.now(tz=str(time_zone)).replace(hour=0, minute=0, second=0) - pd.Timedelta(days = 1)
-        tomorrow = yesterday + pd.Timedelta(hours = 71)
+        tz = self.timezone
 
-        data = await self.fetch_prices(yesterday, tomorrow)
+        start_today = pd.Timestamp.now(tz).floor("1D")
+        end_today = pd.Timestamp.now(tz).ceil(freq="1D") - pd.Timedelta(seconds=1)
+        start_tomorrow = (pd.Timestamp.now(tz) + pd.DateOffset(days=1)).floor("1D")
+        end_tomorrow = (pd.Timestamp.now(tz) + pd.DateOffset(days=1)).ceil(
+            freq="1D"
+        ) - pd.Timedelta(seconds=1)
+
+        data = await self.fetch_prices(start_today, end_tomorrow)
+
         if data is not None:
-            parsed_data = data
-            data_all = parsed_data[-48:].to_dict()
-            if parsed_data.size > 48:
-                data_today = parsed_data[-48:-24].to_dict()
-                data_tomorrow = parsed_data[-24:].to_dict()
-            else:
-                data_today = parsed_data[-24:].to_dict()
-                data_tomorrow = {}
+            # entsoe-py returns timestamps in server timezone
+            # converting the data series to requested tz just in case these differ
+            data = data.reindex(data.index.tz_convert(tz))
+
+            # todo: refactor, only handle pandas.Timestamps within this class, since
+            # pandas.Timestamp seems generally buggy, HomeAssistant doesn't support it and
+            # timestamps anyway converted to string in dict that is put in the extra attributes
+            # of the sensor entity.
+
+            # also read https://github.com/EnergieID/entsoe-py/issues/187 and quickfix #202
+
+            # using .loc[] to slice today and tomorrow
+            # .loc[] throws KeyError if missing so we need to catch this silently
+            try:
+                dataToday = data.loc[start_today.strftime("%Y-%m-%d")].to_dict()
+            except KeyError as kerr:
+                dataToday = {}
+            try:
+                # only return a full set of 23 or more items(hours) for 'tomorrow'
+                dataTomorrow = (
+                    data.loc[start_tomorrow.strftime("%Y-%m-%d")].to_dict()
+                    if data.loc[start_tomorrow.strftime("%Y-%m-%d")].size >= 23
+                    else {}
+                )
+            except KeyError as kerr:
+                dataTomorrow = {}
 
             return {
-                "data": data_all,
-                "dataToday": data_today,
-                "dataTomorrow": data_tomorrow,
+                "data": data.to_dict(),
+                "dataToday": dataToday,
+                "dataTomorrow": dataTomorrow,
             }
         elif self.data is not None:
-            newest_timestamp_today = pd.Timestamp(list(self.data["dataToday"])[-1])
-            if any(self.data["dataTomorrow"]) and newest_timestamp_today < pd.Timestamp.now(newest_timestamp_today.tzinfo):
-                self.data["dataToday"] = self.data["dataTomorrow"]
-                self.data["dataTomorrow"] = {}
-                data_list = list(self.data["data"])
-                new_data_dict = {}
-                if len(data_list) >= 24:
-                    for hour, price in self.data["data"].items()[-24:]:
-                        new_data_dict[hour] = price
-                    self.data["data"] = new_data_dict
+            # Note to self: we never come here since fetch_prices already throws if data is None
 
             return {
                 "data": self.data["data"],
@@ -95,28 +112,33 @@ class EntsoeCoordinator(DataUpdateCoordinator):
 
             return resp
 
-        except (HTTPError) as exc:
+        except HTTPError as exc:
             if exc.response.status_code == 401:
                 raise UpdateFailed("Unauthorized: Please check your API-key.") from exc
         except Exception as exc:
             if self.data is not None:
                 newest_timestamp = pd.Timestamp(list(self.data["data"])[-1])
-                if(newest_timestamp) > pd.Timestamp.now(newest_timestamp.tzinfo):
-                    self.logger.warning(f"Warning the integration is running in degraded mode (falling back on stored data) since fetching the latest ENTSOE-e prices failed with exception: {exc}.")
+                if (newest_timestamp) > pd.Timestamp.now(newest_timestamp.tzinfo):
+                    self.logger.warning(
+                        f"Warning the integration is running in degraded mode (falling back on stored data) since fetching the latest ENTSOE-e prices failed with exception: {exc}."
+                    )
                 else:
-                    self.logger.error(f"Error the latest available data is older than the current time. Therefore entities will no longer update. {exc}")
-                    raise UpdateFailed(f"Unexcpected error when fetching ENTSO-e prices: {exc}") from exc
+                    self.logger.error(
+                        f"Error the latest available data is older than the current time. Therefore entities will no longer update. {exc}"
+                    )
+                    raise UpdateFailed(
+                        f"Unexpected error when fetching ENTSO-e prices: {exc}"
+                    ) from exc
             else:
-                self.logger.warning(f"Warning the integration doesn't have any up to date local data this means that entities won't get updated but access remains to restorable entities: {exc}.")
-
-
+                self.logger.warning(
+                    f"Warning the integration doesn't have any up to date local data this means that entities won't get updated but access remains to restorable entities: {exc}."
+                )
 
     def api_update(self, start_date, end_date, api_key):
         client = EntsoePandasClient(api_key=api_key)
         return client.query_day_ahead_prices(
             country_code=self.area, start=start_date, end=end_date
         )
-
 
     def processed_data(self):
         return {
@@ -127,8 +149,19 @@ class EntsoeCoordinator(DataUpdateCoordinator):
             "time_tomorrow": self.get_tomorrow(self.data),
         }
 
+    def get_timestamped_prices(self, hourprices):
+        list = []
+        for hour, price in hourprices.items():
+            str_hour = str(hour)
+            list.append({"time": str_hour, "price": price})
+        return list
+
     def get_today(self, hourprices):
-        return min(hourprices, key=hourprices.get)
+        return pd.Timestamp.now(self.timezone).floor("1D").to_pydatetime()
 
     def get_tomorrow(self, hourprices):
-        return min(hourprices, key=hourprices.get)
+        return (
+            (pd.Timestamp.now(self.timezone) + pd.DateOffset(days=1))
+            .floor("1D")
+            .to_pydatetime()
+        )

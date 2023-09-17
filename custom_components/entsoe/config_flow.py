@@ -24,10 +24,12 @@ from .const import (
     CONF_API_KEY,
     CONF_ENTITY_NAME,
     CONF_AREA,
+    CONF_TZ,
     DOMAIN,
     COMPONENT_TITLE,
     UNIQUE_ID,
     AREA_INFO,
+    TZ_INFO,
 )
 
 
@@ -37,9 +39,8 @@ class EntsoeFlowHandler(ConfigFlow, domain=DOMAIN):
     def __init__(self):
         """Initialize ENTSO-e ConfigFlow."""
         self.area = None
-        # self.advanced_options = None
+        self.timezone = None
         self.api_key = None
-        # self.modifyer = None
         self.name = ""
 
     VERSION = 1
@@ -61,6 +62,7 @@ class EntsoeFlowHandler(ConfigFlow, domain=DOMAIN):
 
         if user_input is not None:
             self.area = user_input[CONF_AREA]
+            self.timezone = user_input[CONF_TZ]
             self.api_key = user_input[CONF_API_KEY]
             self.name = user_input[CONF_ENTITY_NAME]
 
@@ -81,6 +83,7 @@ class EntsoeFlowHandler(ConfigFlow, domain=DOMAIN):
                     options={
                         CONF_API_KEY: user_input[CONF_API_KEY],
                         CONF_AREA: user_input[CONF_AREA],
+                        CONF_TZ: user_input[CONF_TZ],
                         CONF_ENTITY_NAME: user_input[CONF_ENTITY_NAME],
                     },
                 )
@@ -90,7 +93,9 @@ class EntsoeFlowHandler(ConfigFlow, domain=DOMAIN):
             errors=errors,
             data_schema=vol.Schema(
                 {
-                    vol.Optional(CONF_ENTITY_NAME, default=""): vol.All(vol.Coerce(str)),
+                    vol.Optional(CONF_ENTITY_NAME, default=""): vol.All(
+                        vol.Coerce(str)
+                    ),
                     vol.Required(CONF_API_KEY): vol.All(vol.Coerce(str)),
                     vol.Required(CONF_AREA): SelectSelector(
                         SelectSelectorConfig(
@@ -100,7 +105,14 @@ class EntsoeFlowHandler(ConfigFlow, domain=DOMAIN):
                             ]
                         ),
                     ),
+                    vol.Required(CONF_TZ): SelectSelector(
+                        SelectSelectorConfig(
+                            options=[
+                                SelectOptionDict(value=key, label=info["timezone"])
+                                for key, info in TZ_INFO.items()
+                            ]
+                        ),
+                    ),
                 },
             ),
         )
-

@@ -11,6 +11,7 @@ from .const import (
     DOMAIN,
     CONF_API_KEY,
     CONF_AREA,
+    CONF_TZ,
 )
 from .coordinator import EntsoeCoordinator
 
@@ -24,7 +25,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Initialise the coordinator and save it as domain-data
     api_key = entry.options[CONF_API_KEY]
     area = entry.options[CONF_AREA]
-    entsoe_coordinator = EntsoeCoordinator(hass, api_key=api_key, area = area)
+    timezone = entry.options[CONF_TZ]
+    entsoe_coordinator = EntsoeCoordinator(
+        hass, api_key=api_key, area=area, timezone=timezone
+    )
 
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = {
