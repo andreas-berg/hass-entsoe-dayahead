@@ -70,8 +70,10 @@ class EntsoeCoordinator(DataUpdateCoordinator):
             # pandas.Timestamp seems generally buggy, HomeAssistant doesn't support it and
             # timestamps anyway converted to string in dict that is put in the extra attributes
             # of the sensor entity.
-
             # also read https://github.com/EnergieID/entsoe-py/issues/187 and quickfix #202
+
+            # convert all prices (in pd.Series) from €/MWh to €-cent/kWh = divide by 10.0
+            data = round(( data / 10.0 ), 3)
 
             # using .loc[] to slice today and tomorrow
             # .loc[] throws KeyError if missing so we need to catch this silently

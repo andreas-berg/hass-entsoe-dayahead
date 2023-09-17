@@ -172,28 +172,6 @@ class EntsoeSensor(CoordinatorEntity, RestoreSensor):
                         x: self.coordinator.processed_data()[x]
                     }
 
-            # selected_keys = {"prices_today"}
-            # if (
-            #     self.description.key == "prices_today"
-            #     and self._attr_native_value is not None
-            # ):
-            #     self._attr_extra_state_attributes = {
-            #         x: self.coordinator.processed_data()[x]
-            #         for x in self.coordinator.processed_data()
-            #         if x in selected_keys
-            #     }
-
-            # selected_keys = {"prices_tomorrow"}
-            # if (
-            #     self.description.key == "prices_tomorrow"
-            #     and self._attr_native_value is not None
-            # ):
-            #     self._attr_extra_state_attributes = {
-            #         x: self.coordinator.processed_data()[x]
-            #         for x in self.coordinator.processed_data()
-            #         if x in selected_keys
-            #     }
-
         # Cancel the currently scheduled event if there is any
         if self._unsub_update:
             self._unsub_update()
