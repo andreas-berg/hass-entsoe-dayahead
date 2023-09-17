@@ -3,10 +3,10 @@
 
 # Home Assistant ENTSO-e Transparency Platform Energy Prices
 Custom component for Home Assistant to fetch energy prices of all European countries from the ENTSO-e Transparency Platform (https://transparency.entsoe.eu/).
-Day ahead energy prices are added as a sensor and can be used in automations to switch equipment. A 24 Hour forecast of the energy prices is in the sensors attributes and can be shown in a graph:
+Day ahead energy prices are added as a sensor and can be used in automations to switch equipment. A 24 Hour forecast of the energy prices is in the sensors attributes and can be shown in a graph (btw this "middle-finger" is a real @ market FI / 18.9.2023):
 
 <p align="center">
-    <img src="https://user-images.githubusercontent.com/31140879/195382579-c87b3285-c599-4e30-867e-1acf9feffabe.png" width=40% height=40%>
+<img src="https://github.com/andreas-berg/hass-entsoe-dayahead/assets/39428693/2fb7e32c-b93a-4277-9dbd-0135eece885a" width=40% height=40%>
 </p>
 
 ### API Access
@@ -44,32 +44,62 @@ The sensors can be added using the web UI. In the web UI you can add your API-ke
 Prices can be shown using the [ApexChart Graph Card](https://github.com/RomRider/apexcharts-card) like in the example above. The Lovelace code for this graph is given below:
 
 ```
-type: custom:apexcharts-card
-graph_span: 24h
-span:
-  start: day
-now:
-  show: true
-  label: Now
-header:
-  show: true
-  title: Electriciteitsprijzen Vandaag (€/kwh)
-yaxis:
-  - decimals: 2
-series:
-  # This is the entity ID with no name configured.
-  # When a name is configured it will be sensor.<name>_average_electricity_price_today.
-  - entity: sensor.average_electricity_price_today
-    stroke_width: 2
-    float_precision: 3
-    type: column
-    opacity: 1
-    color: ''
-    data_generator: |
-      return entity.attributes.prices.map((entry) => { 
-      return [new Date(entry.time), entry.price];
-      });
-
+- title: Elpris
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: custom:apexcharts-card
+            apex_config:
+              chart:
+                width: 100%
+              grid:
+                borderColor: rgba(255,255,255,0.1)
+              xaxis:
+                tooltip:
+                  enabled: false
+              yaxis:
+                min: 0
+                tickAmount: 5
+                tooltip:
+                  formatter: |
+                    EVAL:function(val, opts) {
+                      return val + "c/kWh";
+                    }
+            experimental:
+              color_threshold: true
+            graph_span: 1d
+            header:
+              title: Elpris imorgon (cnt/kWh)
+              show: true
+            span:
+              start: day
+              offset: +1d
+            series:
+              - entity: sensor.entsoe_prices_tomorrow
+                name: Spot
+                type: line
+                curve: stepline
+                stroke_width: 2
+                color_threshold:
+                  - value: -100
+                    color: blue
+                    opacity: 1
+                  - value: 0
+                    color: rgb(115, 191, 105)
+                    opacity: 1
+                  - value: 10
+                    color: rgb(250, 222, 42)
+                  - value: 20
+                    color: rgb(255, 152, 48)
+                  - value: 40
+                    color: rgb(242, 73, 92)
+                  - value: 60
+                    color: rgb(163, 82, 204)
+                data_generator: >
+                  return entity.attributes.prices_tomorrow.map((item, index) =>
+                  {
+                    return [new Date(item["time"]).getTime(), entity.attributes.prices_tomorrow[index]["price"]];
+                  });
 ```
 
 
