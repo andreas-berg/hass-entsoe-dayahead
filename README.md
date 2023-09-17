@@ -28,62 +28,14 @@ The integration adds the following sensors:
 ### Manual
 Download this repository and place the contents of `custom_components` in your own `custom_components` map of your Home Assistant installation. Restart Home Assistant and add the integration through your settings. 
 
-### HACS
+### HACS (not available yet)
 
-Search for "ENTSO-e" when adding HACS integrations and add "ENTSO-e Transparency Platform". Restart Home Assistant and add the integration through your settings. 
+~~Search for "ENTSO-e" when adding HACS integrations and add "ENTSO-e Transparency Platform". Restart Home Assistant and add the integration through your settings.~~
 
 ------
 ## Configuration
 
-The sensors can be added using the web UI. In the web UI you can add your API-key and country and the sensors will automatically be added to your system. There is an optional field for an cost modifyer template.
-
-~~### Cost Modifyer Template~~
-
-~~In the optional field `Price Modifyer Template` a template to modify the price to add additional costs, such as fixed costs per kWh and VAT, can be added. When left empty, no additional costs are added.~~
-~~In this template `now()` always refers start of the hour of that price and `current_price` refers to the price itself. This way day ahead price can be modified to correct for extra costs.~~
-
-```
-{% set s = {
-    "extra_cost": 0.5352,
-    "winter_night": 0.265,
-    "winter_day": 0.465,
-    "summer_day": 0.284,
-    "summer_night": 0.246,
-    "VAT": 1.21
-}
-%}
-{% if now().month >= 5 and now().month <11 %}
-    {% if now().hour >=6 and now().hour <23 %}
-        {{(current_price + s.summer_day+s.extra_cost) * s.VAT | float}}
-    {% else %}
-        {{(current_price + s.summer_night + s.extra_cost) * s.VAT | float}}
-    {% endif %}
-{% else %}
-    {% if now().hour >=6 and now().hour <23 %}
-        {{(current_price + s.winter_day + s.extra_cost) * s.VAT | float}}
-    {%else%}
-        {{(current_price + s.winter_night + s.extra_cost) * s.VAT | float}}
-    {% endif %}
-{% endif %}
-```
-### Calculation method
-This changes the calculated (min,max,avg values) entities behaviour to one of:
-
-- Sliding
-The min/max/etc entities will get updated every hour with only upcoming data.
-This means that the min price returned at 13:00 will be the lowest price in the future (as available from that point in time).
-Regardless of past hours that might have had a lower price (this is most useful if you want to be able to schedule loads as soon and cheap as possible)
-
-- Default (on publish)
-The min/max/etc entities will get updated once new data becomes available.
-This means that the min price will update once the next days pricing becomes available (usually between 12:00 and 15:00)
-It also means that until the next days pricing becomes available the latest 48h of available data will be used to calculate a min price
-
-- Rotation
-The min/max/etc entities will get updated at midnight.
-This means that the min price returned at 23:59 will  be based on the day x price while at 00:00 the day x+1 price will be the only one used in the calculations)
-day x in this case is a random date like 2022-10-10 and day x+1 2022-10-11
-
+The sensors can be added using the web UI. In the web UI you can add your API-key and country and the sensors will automatically be added to your system. 
 
 ### ApexChart Graph
 Prices can be shown using the [ApexChart Graph Card](https://github.com/RomRider/apexcharts-card) like in the example above. The Lovelace code for this graph is given below:
@@ -118,9 +70,5 @@ series:
 ```
 
 
-------
 
-#### Updates
-
-The integration is in an early state and receives a lot of updates. If you already setup this integration and encounter an error after updating, please try redoing the above installation steps. 
 
