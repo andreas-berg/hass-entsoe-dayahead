@@ -3,11 +3,14 @@
 
 # Home Assistant ENTSO-e Transparency Platform Energy Prices
 Custom component for Home Assistant to fetch energy prices of all European countries from the ENTSO-e Transparency Platform (https://transparency.entsoe.eu/).
-Day ahead energy prices are added as a sensor and can be used in automations to switch equipment. A 24 Hour forecast of the energy prices is in the sensors attributes and can be shown in a graph (btw this "middle-finger" is a real @ market FI / 18.9.2023):
+Day ahead energy prices are added as a sensor and can be used in automations to switch equipment. A 24 Hour forecast of the energy prices is in the sensors attributes and can be shown in a graph:
 
-<p align="center">
-<img src="https://github.com/andreas-berg/hass-entsoe-dayahead/assets/39428693/2fb7e32c-b93a-4277-9dbd-0135eece885a" width=40% height=40%>
-</p>
+
+<img src="https://github.com/andreas-berg/hass-entsoe-dayahead/assets/39428693/2fb7e32c-b93a-4277-9dbd-0135eece885a" height="300"> | <img height="300" src="https://github.com/andreas-berg/hass-entsoe-dayahead/assets/39428693/cfeca581-b129-46d1-abee-d6d3418d6a4d">
+:-------------------------:|:-------------------------:
+"Middle Finger" - pricing  |  Kinect Energy sent a "wrong bid" for Finland for delivery on Nov. 24
+Bidding Zone: FI @ 18.9.2023 | Bidding Zone @ 24.11.2023
+
 
 ### API Access
 You need an ENTSO-e Restful API key for this integration. To request this API key, register on the [Transparency Platform](https://transparency.entsoe.eu/) and send an email to transparency@entsoe.eu with “Restful API access” in the subject line. Indicate the
@@ -58,7 +61,6 @@ Prices can be shown using the [ApexChart Graph Card](https://github.com/RomRider
                 tooltip:
                   enabled: false
               yaxis:
-                min: 0
                 tickAmount: 5
                 tooltip:
                   formatter: |
