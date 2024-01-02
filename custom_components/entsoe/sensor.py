@@ -130,6 +130,7 @@ class EntsoeSensor(CoordinatorEntity, RestoreSensor):
             if description.device_class is None
             else description.device_class
         )
+        self._attr_state_class = None if self._attr_device_class in [SensorDeviceClass.TIMESTAMP, SensorDeviceClass.MONETARY] else SensorStateClass.MEASUREMENT
         self.entity_description: EntsoeEntityDescription = description
 
         self._update_job = HassJob(self.async_schedule_update_ha_state)
