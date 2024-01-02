@@ -98,7 +98,7 @@ class EntsoeSensorExtraStoredData(SensorExtraStoredData):
         )
 
 
-class EntsoeSensor(CoordinatorEntity, RestoreSensor):
+class EntsoeSensor(CoordinatorEntity):
     """Representation of a ENTSO-e sensor."""
 
     _attr_attribution = ATTRIBUTION
@@ -138,21 +138,8 @@ class EntsoeSensor(CoordinatorEntity, RestoreSensor):
 
         super().__init__(coordinator)
 
-    async def async_added_to_hass(self) -> None:
-        """Handle entity which will be added."""
-        await super().async_added_to_hass()
-        _LOGGER.debug(f"Trying to restore last sensor data: check if existing!!")
-        # if (last_sensor_data := await self.async_get_last_sensor_data()) is not None:
-        #     # new introduced in 2022.04
-        #     _LOGGER.debug(f"Trying to restore last sensor data: {last_sensor_data}")
-        #     if last_sensor_data.native_value is not None:
-        #         self._attr_native_value = last_sensor_data.native_value
-        #     if last_sensor_data._attr_extra_state_attributes is not None:
-        #         self._attr_extra_state_attributes = dict(
-        #             last_sensor_data._attr_extra_state_attributes
-        #         )
-
     async def async_update(self) -> None:
+        _LOGGER.debug(f"async_update")
         """Get the latest data and updates the states."""
         value: Any = None
         if self.coordinator.data is not None:
@@ -182,36 +169,6 @@ class EntsoeSensor(CoordinatorEntity, RestoreSensor):
         self._unsub_update = event.async_track_point_in_utc_time(
             self.hass,
             self._update_job,
-            utcnow().replace(minute=0, second=0) + timedelta(minutes=5),
+            utcnow().replace(minute=0, second=0) + timedelta(minutes=60),
         )
 
-    @property
-    def extra_restore_state_data(self) -> EntsoeSensorExtraStoredData:
-        """Return sensor specific state data to be restored."""
-        return EntsoeSensorExtraStoredData(
-            self._attr_native_value,
-            None,
-            self._attr_extra_state_attributes
-            if hasattr(self, "_attr_extra_state_attributes")
-            else None,
-        )
-
-    async def async_get_last_sensor_data(self) -> EntsoeSensorExtraStoredData | None:
-        """Restore Entsoe-e Sensor Extra Stored Data."""
-        if (restored_last_extra_data := await self.async_get_last_extra_data()) is None:
-            return None
-
-        _LOGGER.debug(f"Dict: {restored_last_extra_data.as_dict()}")
-
-        if self.coordinator.data is not None:
-            if self.description.key == "prices_today":
-                self.coordinator.data[
-                    "prices_today"
-                ] = restored_last_extra_data.as_dict()["_attr_extra_state_attributes"]
-
-            if self.description.key == "prices_tomorrow":
-                self.coordinator.data[
-                    "prices_tomorrow"
-                ] = restored_last_extra_data.as_dict()["_attr_extra_state_attributes"]
-
-        return EntsoeSensorExtraStoredData.from_dict(restored_last_extra_data.as_dict())

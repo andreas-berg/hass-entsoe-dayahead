@@ -146,8 +146,8 @@ class EntsoeCoordinator(DataUpdateCoordinator):
         return {
             "prices_today": self.get_timestamped_prices(self.data["dataToday"]),
             "prices_tomorrow": self.get_timestamped_prices(self.data["dataTomorrow"]),
-            "time_today": self.get_today(self.data),
-            "time_tomorrow": self.get_tomorrow(self.data),
+            "time_today": self.get_today(),
+            "time_tomorrow": self.get_tomorrow(),
         }
 
     def get_timestamped_prices(self, hourprices):
@@ -157,10 +157,10 @@ class EntsoeCoordinator(DataUpdateCoordinator):
             list.append({"time": str_hour, "price": price})
         return list
 
-    def get_today(self, hourprices):
+    def get_today(self):
         return pd.Timestamp.now(self.timezone).floor("1D").to_pydatetime()
 
-    def get_tomorrow(self, hourprices):
+    def get_tomorrow(self):
         return (
             (pd.Timestamp.now(self.timezone) + pd.DateOffset(days=1))
             .floor("1D")
