@@ -146,7 +146,6 @@ class EntsoeCoordinator(DataUpdateCoordinator):
         return {
             "prices_today": self.get_timestamped_prices(self.data["dataToday"]),
             "prices_tomorrow": self.get_timestamped_prices(self.data["dataTomorrow"]),
-            "prices": self.get_timestamped_prices(self.data["data"]),
             "time_today": self.get_today(self.data),
             "time_tomorrow": self.get_tomorrow(self.data),
         }
