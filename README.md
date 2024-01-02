@@ -8,8 +8,8 @@ Day ahead energy prices are added as a sensor and can be used in automations to 
 
 <img src="https://github.com/andreas-berg/hass-entsoe-dayahead/assets/39428693/2fb7e32c-b93a-4277-9dbd-0135eece885a" height="300"> | <img height="300" src="https://github.com/andreas-berg/hass-entsoe-dayahead/assets/39428693/cfeca581-b129-46d1-abee-d6d3418d6a4d">
 :-------------------------:|:-------------------------:
-"Middle Finger" - pricing  |  Kinect Energy sent a "wrong bid" for Finland for delivery on Nov. 24
-Bidding Zone: FI @ 18.9.2023 | Bidding Zone @ 24.11.2023
+"Middle Finger" - pricing  |  Kinect Energy sent a "wrong bid" = Black Friday consumption party
+Bidding Zone: FI @ 18.9.2023 | Bidding Zone: FI @ 24.11.2023
 
 
 ### API Access
