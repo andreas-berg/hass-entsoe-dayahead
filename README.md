@@ -45,63 +45,58 @@ The sensors can be added using the web UI. In the web UI you can add your API-ke
 
 ### ApexChart Graph
 Prices can be shown using the [ApexChart Graph Card](https://github.com/RomRider/apexcharts-card) like in the example above. The Lovelace code for this graph is given below:
-
+(Should work to just add an ApexCharts-Card and replace all yaml in the editor window with this)
 ```
-- title: Elpris
-    cards:
-      - type: vertical-stack
-        cards:
-          - type: custom:apexcharts-card
-            apex_config:
-              chart:
-                width: 100%
-              grid:
-                borderColor: rgba(255,255,255,0.1)
-              xaxis:
-                tooltip:
-                  enabled: false
-              yaxis:
-                tickAmount: 5
-                tooltip:
-                  formatter: |
-                    EVAL:function(val, opts) {
-                      return val + "c/kWh";
-                    }
-            experimental:
-              color_threshold: true
-            graph_span: 1d
-            header:
-              title: Elpris imorgon (cnt/kWh)
-              show: true
-            span:
-              start: day
-              offset: +1d
-            series:
-              - entity: sensor.entsoe_prices_tomorrow
-                name: Spot
-                type: line
-                curve: stepline
-                stroke_width: 2
-                color_threshold:
-                  - value: -100
-                    color: blue
-                    opacity: 1
-                  - value: 0
-                    color: rgb(115, 191, 105)
-                    opacity: 1
-                  - value: 10
-                    color: rgb(250, 222, 42)
-                  - value: 20
-                    color: rgb(255, 152, 48)
-                  - value: 40
-                    color: rgb(242, 73, 92)
-                  - value: 60
-                    color: rgb(163, 82, 204)
-                data_generator: >
-                  return entity.attributes.prices_tomorrow.map((item, index) =>
-                  {
-                    return [new Date(item["time"]).getTime(), entity.attributes.prices_tomorrow[index]["price"]];
-                  });
+type: custom:apexcharts-card
+apex_config:
+  chart:
+    width: 100%
+  grid:
+    borderColor: rgba(255,255,255,0.1)
+  xaxis:
+    tooltip:
+      enabled: false
+  yaxis:
+    tickAmount: 5
+    tooltip:
+      formatter: |
+        EVAL:function(val, opts) {
+          return val + "c/kWh";
+        }
+experimental:
+  color_threshold: true
+graph_span: 1d
+header:
+  title: Elpris imorgon (cnt/kWh)
+  show: true
+span:
+  start: day
+  offset: +1d
+series:
+  - entity: sensor.entsoe_prices_tomorrow
+    name: Spot
+    type: line
+    curve: stepline
+    stroke_width: 2
+    color_threshold:
+      - value: -100
+        color: blue
+        opacity: 1
+      - value: 0
+        color: rgb(115, 191, 105)
+        opacity: 1
+      - value: 10
+        color: rgb(250, 222, 42)
+      - value: 20
+        color: rgb(255, 152, 48)
+      - value: 40
+        color: rgb(242, 73, 92)
+      - value: 60
+        color: rgb(163, 82, 204)
+    data_generator: |
+      return entity.attributes.prices_tomorrow.map((item, index) => {
+        return [new Date(item["time"]).getTime(), entity.attributes.prices_tomorrow[index]["price"]];
+      });
 ```
 
 
